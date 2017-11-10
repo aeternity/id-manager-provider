@@ -3,9 +3,7 @@ import Web3 from 'web3'
 const uuidv4 = require('uuid/v4')
 
 const METHOD_GET_ACCOUNTS = 'getAccounts'
-// const METHOD_GET_ACCOUNTS_RETURN = 'getAccountsReturn'
 const METHOD_SIGN_TRANSACTION = 'signTransaction'
-// const METHOD_SIGN_TRANSACTION_RETURN = 'signTransactionReturn'
 
 class IdManagerProvider {
 	constructor (options) {
@@ -57,7 +55,7 @@ class IdManagerProvider {
 	postMessage (method, payload, callback) {
 		let uuid = uuidv4()
 		this.registerHandler(uuid, callback)
-		// TODO: define target origin
+		// define target origin
 		let targetOrigin = this.protocol + '://' + this.idManagerHost;
 		// let targetOrigin = '*'
 		let message = {
