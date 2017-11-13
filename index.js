@@ -71,8 +71,12 @@ class IdManagerProvider {
 	}
 
 	checkIdManager () {
-		// console.log('checkIdManager', this.idManagerWindow.location.host, this.idManagerHost)
-		return this.idManagerWindow.location.host === this.idManagerHost
+		try {
+			return this.idManagerWindow.location.host === this.idManagerHost
+		} catch (err) {
+			console.log(err)
+			return false
+		}
 	}
 }
 
