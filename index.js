@@ -11,6 +11,8 @@ class IdManagerProvider {
 		this.idManagerHost = options.idManagerHost ? options.idManagerHost : 'identity.aepps.com'
 		this.rpcUrl = options.rpcUrl ? options.rpcUrl : 'https://kovan.infura.io'
 		this.idManagerWindow = options.idManagerWindow ? options.idManagerWindow : parent
+		//this should only be disabled in development
+		this.skipSecurity = options.skipSecurity ? options.skipSecurity : false
 		this.web3 = null
 		this.handlers = {}
 		this.init()
@@ -57,7 +59,9 @@ class IdManagerProvider {
 		this.registerHandler(uuid, callback)
 		// define target origin
 		let targetOrigin = this.protocol + '://' + this.idManagerHost;
-		// let targetOrigin = '*'
+		if (this.skipSecurity) {
+			targetOrigin = '*'
+		}
 		let message = {
 			uuid: uuid,
 			method: method,
@@ -71,6 +75,9 @@ class IdManagerProvider {
 	}
 
 	checkIdManager () {
+		if (this.skipSecurity) {
+			return true
+		}
 		try {
 			return this.idManagerWindow.location.host === this.idManagerHost
 		} catch (err) {
