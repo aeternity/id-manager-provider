@@ -1,7 +1,7 @@
 {
   "name": "@aeternity/id-manager-provider",
   "version": "0.0.1",
-  "description": "",
+  "description": "This basically is a dummy web3 provider which sends its requests to the ID Manager instead of handling them itself. The communication is handled with postMessage calls and callbacks. For security all Dapps using this must run under the following url scheme http(s)://<subdomain>.aepps.(com|dev)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,5 +12,14 @@
     "uuid": "^3.1.0",
     "web3": "^1.0.0-beta.24",
     "web3-provider-engine": "^13.3.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aeternity/id-manager-provider.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aeternity/id-manager-provider/issues"
+  },
+  "homepage": "https://github.com/aeternity/id-manager-provider#readme"
 }
