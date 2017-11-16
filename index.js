@@ -10,7 +10,11 @@ class IdManagerProvider {
 		this.protocol = options.protocol ? options.protocol : 'http'
 		this.idManagerHost = options.idManagerHost ? options.idManagerHost : 'identity.aepps.com'
 		this.rpcUrl = options.rpcUrl ? options.rpcUrl : 'https://kovan.infura.io'
-		this.idManagerWindow = options.idManagerWindow ? options.idManagerWindow : parent
+		if(self===top) {
+			this.idManagerWindow = null
+		} else {
+			this.idManagerWindow = options.idManagerWindow ? options.idManagerWindow : parent
+		}
 		//this should only be disabled in development
 		this.skipSecurity = options.skipSecurity ? options.skipSecurity : false
 		this.web3 = null
@@ -48,7 +52,7 @@ class IdManagerProvider {
 			let payload = data.payload
 			let handler = that.handlers[data.uuid]
 			if (handler) {
-				handler(payload)
+				handler(payload, event)
 				delete that.handlers[data.uuid]
 			}
 		}, false)
@@ -75,15 +79,23 @@ class IdManagerProvider {
 	}
 
 	checkIdManager () {
-		if (this.skipSecurity) {
-			return true
-		}
-		try {
-			return this.idManagerWindow.location.host === this.idManagerHost
-		} catch (err) {
-			console.log(err)
-			return false
-		}
+		return new Promise((resolve, reject)=>{
+			let timeout = setTimeout(()=>{
+				resolve(false)
+			},500)
+			try {
+				//return this.idManagerWindow.location.host === this.idManagerHost
+				this.postMessage('handShake',null, (payload, event)=>{
+					console.log('event', event)
+					clearTimeout(timeout)
+					resolve(true)
+					//return event.origin.indexOf
+				})
+			} catch (err) {
+				clearTimeout(timeout)
+				resolve(false)
+			}
+		})
 	}
 }
 

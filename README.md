@@ -5,15 +5,26 @@ This basically is a dummy web3 provider which sends its requests to the ID Manag
 ```javascript
 import IdManagerProvider from '@aeternity/id-manager-provider'
 // ...
-let idManager = new IdManagerProvider({
-	// for development you can override the host, default is identity.aepps.com
-	idManagerHost: 'identity.aepps.dev'
-	// OR you can disable security checking with
-	// skipSecurity: true
-	// but only use this with local development, it wont work with the deployed identity manager anyway
-})
-// checkIdManager checks if the idManagerWindow (by default the iframes parent) has the correct host
-if (idManager.checkIdManager()) {
-	web3 = new Web3(idManager.web3.currentProvider)
+function initWeb3() {
+	let web3;
+	let idManager = new IdManagerProvider({
+		skipSecurity: process.env.NODE_ENV === 'development'
+	})
+	idManager.checkIdManager().then( (idManagerPresent) => {
+		if (idManagerPresent ) {
+			web3 = new Web3(idManager.web3.currentProvider)
+		} else if (typeof window.web3 !== 'undefined') { // Metamask
+			web3 = new Web3(window.web3.currentProvider);
+		} else {
+			web3 = null;
+		}
+
+		if (web3) {
+			// Ready
+		} else {
+			// Not Ready
+		}
+
+	})
 }
 ```
