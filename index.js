@@ -59,13 +59,14 @@ class IdManagerProvider {
 			}
 		}, false)
 	}
-	
+
 	getGas (tx, callback) {
 		if (tx.gas) {
 			callback(tx)
 		} else {
 			this.web3.eth.estimateGas({
 				to: tx.to,
+				from: tx.from,
 				data: tx.data
 			}, function (error, gas) {
 				tx.gas = gas
