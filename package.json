@@ -1,6 +1,6 @@
 {
   "name": "@aeternity/id-manager-provider",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "This basically is a dummy web3 provider which sends its requests to the ID Manager instead of handling them itself. The communication is handled with postMessage calls and callbacks. For security all Dapps using this must run under the following url scheme http(s)://<subdomain>.aepps.(com|dev)",
   "main": "index.js",
   "scripts": {
