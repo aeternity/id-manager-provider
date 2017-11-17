@@ -31,8 +31,10 @@ class IdManagerProvider {
 				})
 			},
 			signTransaction: function (tx, done) {
-				that.postMessage(METHOD_SIGN_TRANSACTION, tx, function (payload) {
-					return done(null, '0x' + payload)
+				that.getGas(tx, function (tx) {
+					that.postMessage(METHOD_SIGN_TRANSACTION, tx, function (payload) {
+						return done(null, '0x' + payload)
+					})
 				})
 			},
 			approveTransaction: function (tx, done) {
@@ -56,6 +58,20 @@ class IdManagerProvider {
 				delete that.handlers[data.uuid]
 			}
 		}, false)
+	}
+	
+	getGas (tx, callback) {
+		if (tx.gas) {
+			callback(tx)
+		} else {
+			this.web3.eth.estimateGas({
+				to: tx.to,
+				data: tx.data
+			}, function (error, gas) {
+				tx.gas = gas
+				callback(tx)
+			})
+		}
 	}
 
 	postMessage (method, payload, callback) {
