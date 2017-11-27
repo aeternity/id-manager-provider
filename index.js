@@ -7,7 +7,7 @@ const METHOD_SIGN_TRANSACTION = 'signTransaction'
 
 class IdManagerProvider {
 	constructor (options = {}) {
-		this.protocol = options.protocol ? options.protocol : 'http'
+		this.protocol = options.protocol ? options.protocol : 'https'
 		this.idManagerHost = options.idManagerHost ? options.idManagerHost : 'identity.aepps.com'
 		this.rpcUrl = options.rpcUrl ? options.rpcUrl : 'https://kovan.infura.io'
 		if(self===top) {
