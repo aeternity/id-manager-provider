@@ -4,6 +4,7 @@ const uuidv4 = require('uuid/v4')
 
 const METHOD_GET_ACCOUNTS = 'getAccounts'
 const METHOD_SIGN_TRANSACTION = 'signTransaction'
+const METHOD_SIGN_PERSONAL_MESSAGE = 'signPersonalMessage'
 
 class IdManagerProvider {
 	constructor (options = {}) {
@@ -35,6 +36,12 @@ class IdManagerProvider {
 					that.postMessage(METHOD_SIGN_TRANSACTION, tx, function (payload) {
 						return done(null, '0x' + payload)
 					})
+				})
+			},
+			signPersonalMessage: function (msg, done) {
+				console.log('signPersonalMessage', msg)
+				that.postMessage(METHOD_SIGN_PERSONAL_MESSAGE, msg, function (payload) {
+					return done(null, payload)
 				})
 			},
 			approveTransaction: function (tx, done) {
