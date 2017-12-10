@@ -20,10 +20,23 @@ class IdManagerProvider {
 		this.skipSecurity = options.skipSecurity ? options.skipSecurity : false
 		this.web3 = null
 		this.handlers = {}
-		this.init()
+
+		window.addEventListener('message', function (event) {
+			let data = event.data
+			if (!data.uuid) {
+				// this message is not for us
+				return
+			}
+			let payload = data.payload
+			let handler = that.handlers[data.uuid]
+			if (handler) {
+				handler(payload, event)
+				delete that.handlers[data.uuid]
+			}
+		}, false)
 	}
 
-	init () {
+	initWeb3 () {
 		let that = this
 		this.web3 = new Web3(new ZeroClientProvider({
 			getAccounts: function (done) {
@@ -50,21 +63,6 @@ class IdManagerProvider {
 			},
 			rpcUrl: this.rpcUrl
 		}))
-
-		//register event listener
-		window.addEventListener('message', function (event) {
-			let data = event.data
-			if (!data.uuid) {
-				// this message is not for us
-				return
-			}
-			let payload = data.payload
-			let handler = that.handlers[data.uuid]
-			if (handler) {
-				handler(payload, event)
-				delete that.handlers[data.uuid]
-			}
-		}, false)
 	}
 
 	getGas (tx, callback) {
@@ -112,6 +110,7 @@ class IdManagerProvider {
 				this.postMessage('handShake',null, (payload, event)=>{
 					console.log('event', event)
 					clearTimeout(timeout)
+					initWeb3()
 					resolve(true)
 					//return event.origin.indexOf
 				})
