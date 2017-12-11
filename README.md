@@ -11,8 +11,10 @@ function initWeb3() {
 		skipSecurity: process.env.NODE_ENV === 'development'
 	})
 	idManager.checkIdManager().then( (idManagerPresent) => {
-		if (idManagerPresent ) {
-			web3 = new Web3(idManager.web3.currentProvider)
+		if (idManagerPresent) {
+			// optional if you want the provider to poll current blocks
+			idManager.startPolling()
+			web3 = new Web3(idManager.provider)
 		} else if (typeof window.web3 !== 'undefined') { // Metamask
 			web3 = new Web3(window.web3.currentProvider);
 		} else {
