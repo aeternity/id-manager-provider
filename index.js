@@ -4,6 +4,8 @@ const uuidv4 = require('uuid/v4')
 const METHOD_GET_ACCOUNTS = 'getAccounts'
 const METHOD_SIGN_TRANSACTION = 'signTransaction'
 const METHOD_SIGN_PERSONAL_MESSAGE = 'signPersonalMessage'
+const METHOD_STORE_METADATA = 'storeMetadata'
+const METHOD_READ_METADATA = 'readMetadata'
 
 class IdManagerProvider {
 	constructor (options = {}) {
@@ -121,6 +123,34 @@ class IdManagerProvider {
 			} catch (err) {
 				clearTimeout(timeout)
 				resolve(false)
+			}
+		})
+	}
+
+	storeMetadata (key, value) {
+		let metadata = {
+			key: key,
+			value: value
+		}
+		return new Promise((resolve, reject) => {
+			try {
+				this.postMessage(METHOD_STORE_METADATA, metadata, function (payload) {
+					resolve(payload)
+				})
+			} catch (err) {
+				reject(err)
+			}
+		})
+	}
+
+	readMetadata (key) {
+		return new Promise((resolve, reject) => {
+			try {
+				this.postMessage(METHOD_READ_METADATA, key, function (payload) {
+					resolve(payload)
+				})
+			} catch (err) {
+				reject(err)
 			}
 		})
 	}
