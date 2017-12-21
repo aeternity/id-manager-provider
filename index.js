@@ -16,7 +16,8 @@ class IdManagerProvider {
 		this.protocol = options.protocol ? options.protocol : 'https'
 		this.idManagerHost = options.idManagerHost ? options.idManagerHost : 'identity.aepps.com'
 		this.rpcUrl = options.rpcUrl ? options.rpcUrl : 'https://kovan.infura.io'
-		if(self===top) {
+		this.metadataVersion = options.metadataVersion || 'v0.1'
+		if(self === top) {
 			this.idManagerWindow = null
 		} else {
 			this.idManagerWindow = options.idManagerWindow ? options.idManagerWindow : parent
@@ -123,6 +124,7 @@ class IdManagerProvider {
 
 	storeMetadata (key, value, namespace = null) {
 		let metadata = {
+			metadataVersion: this.metadataVersion,
 			key: key,
 			value: value,
 			namespace: namespace
@@ -132,6 +134,7 @@ class IdManagerProvider {
 
 	readMetadata (key, namespace = null) {
 		let data = {
+			metadataVersion: this.metadataVersion,
 			key: key,
 			namespace: namespace
 		}
