@@ -6,6 +6,10 @@ const METHOD_SIGN_TRANSACTION = 'signTransaction'
 const METHOD_SIGN_PERSONAL_MESSAGE = 'signPersonalMessage'
 const METHOD_STORE_METADATA = 'storeMetadata'
 const METHOD_READ_METADATA = 'readMetadata'
+const METHOD_REQUEST_PERMISSIONS = 'requestPermissions'
+const METHOD_HANDSHAKE = 'handShake'
+
+const DEFAULT_TIMEOUT = 500
 
 class IdManagerProvider {
 	constructor (options = {}) {
@@ -107,49 +111,56 @@ class IdManagerProvider {
 		}
 	}
 
-	checkIdManager () {
-		return new Promise((resolve, reject)=>{
-			let timeout = setTimeout(()=>{
-				resolve(false)
-			},500)
+	async checkIdManager () {
+		try {
+			let handshakeResult = await this.request(METHOD_HANDSHAKE, null, DEFAULT_TIMEOUT)
+			// console.log('handshakeResult', handshakeResult)
+			return true
+		} catch (e) {
+			return false
+		}
+	}
+
+	storeMetadata (key, value, namespace = null) {
+		let metadata = {
+			key: key,
+			value: value,
+			namespace: namespace
+		}
+		return this.request(METHOD_STORE_METADATA, metadata, DEFAULT_TIMEOUT)
+	}
+
+	readMetadata (key, namespace = null) {
+		let data = {
+			key: key,
+			namespace: namespace
+		}
+		return this.request(METHOD_READ_METADATA, data, DEFAULT_TIMEOUT)
+	}
+
+	requestPermissions (permissions) {
+		return this.request(METHOD_REQUEST_PERMISSIONS, permissions, DEFAULT_TIMEOUT)
+	}
+
+	request (method, data, timeoutTime = 0) {
+		return new Promise((resolve, reject) => {
+			let timeout = null
+			if (timeoutTime > 0) {
+				timeout = setTimeout(() => {
+					// TODO: own error class
+					reject(new Error('Timeout'))
+				}, timeoutTime)
+			}
 			try {
-				//return this.idManagerWindow.location.host === this.idManagerHost
-				this.postMessage('handShake',null, (payload, event)=>{
+				this.postMessage(method, data, (payload, event) => {
 					console.log('event', event)
-					clearTimeout(timeout)
-					resolve(true)
-					//return event.origin.indexOf
+					if (timeout) {
+						clearTimeout(timeout)
+					}
+					resolve(payload)
 				})
 			} catch (err) {
 				clearTimeout(timeout)
-				resolve(false)
-			}
-		})
-	}
-
-	storeMetadata (key, value) {
-		let metadata = {
-			key: key,
-			value: value
-		}
-		return new Promise((resolve, reject) => {
-			try {
-				this.postMessage(METHOD_STORE_METADATA, metadata, function (payload) {
-					resolve(payload)
-				})
-			} catch (err) {
-				reject(err)
-			}
-		})
-	}
-
-	readMetadata (key) {
-		return new Promise((resolve, reject) => {
-			try {
-				this.postMessage(METHOD_READ_METADATA, key, function (payload) {
-					resolve(payload)
-				})
-			} catch (err) {
 				reject(err)
 			}
 		})
