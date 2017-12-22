@@ -1,5 +1,4 @@
 import ZeroClientProvider from 'web3-provider-engine/zero'
-import Web3 from 'web3'
 const uuidv4 = require('uuid/v4')
 
 const METHOD_GET_ACCOUNTS = 'getAccounts'
@@ -16,30 +15,29 @@ class IdManagerProvider {
 		} else {
 			this.idManagerWindow = options.idManagerWindow ? options.idManagerWindow : parent
 		}
-		//this should only be disabled in development
+		// this should only be disabled in development
 		this.skipSecurity = options.skipSecurity ? options.skipSecurity : false
 		this.web3 = null
+		this.provider = null
 		this.handlers = {}
 		this.init()
 	}
 
 	init () {
 		let that = this
-		this.web3 = new Web3(new ZeroClientProvider({
+
+		this.provider = new ZeroClientProvider({
 			getAccounts: function (done) {
 				that.postMessage(METHOD_GET_ACCOUNTS, null, function (payload) {
 					return done(null, payload)
 				})
 			},
 			signTransaction: function (tx, done) {
-				that.getGas(tx, function (tx) {
-					that.postMessage(METHOD_SIGN_TRANSACTION, tx, function (payload) {
-						return done(null, '0x' + payload)
-					})
+				that.postMessage(METHOD_SIGN_TRANSACTION, tx, function (payload) {
+					return done(null, '0x' + payload)
 				})
 			},
 			signPersonalMessage: function (msg, done) {
-				console.log('signPersonalMessage', msg)
 				that.postMessage(METHOD_SIGN_PERSONAL_MESSAGE, msg, function (payload) {
 					return done(null, payload)
 				})
@@ -49,9 +47,17 @@ class IdManagerProvider {
 				done(null, true)
 			},
 			rpcUrl: this.rpcUrl
-		}))
+		})
 
-		//register event listener
+		// this is for backwards compatibility purpose
+		this.web3 = {
+			currentProvider: this.provider
+		}
+
+		//stop polling by default
+		this.stopPolling()
+
+		// register event listener
 		window.addEventListener('message', function (event) {
 			let data = event.data
 			if (!data.uuid) {
@@ -65,21 +71,6 @@ class IdManagerProvider {
 				delete that.handlers[data.uuid]
 			}
 		}, false)
-	}
-
-	getGas (tx, callback) {
-		if (tx.gas) {
-			callback(tx)
-		} else {
-			this.web3.eth.estimateGas({
-				to: tx.to,
-				from: tx.from,
-				data: tx.data
-			}, function (error, gas) {
-				tx.gas = gas
-				callback(tx)
-			})
-		}
 	}
 
 	postMessage (method, payload, callback) {
@@ -100,6 +91,18 @@ class IdManagerProvider {
 
 	registerHandler(uuid, handler) {
 		this.handlers[uuid] = handler
+	}
+
+	startPolling() {
+		if (this.provider) {
+			this.provider.start()
+		}
+	}
+
+	stopPolling() {
+		if (this.provider) {
+			this.provider.stop()
+		}
 	}
 
 	checkIdManager () {
