@@ -1,0 +1,7 @@
+export const GET_ACCOUNTS = 'getAccounts'
+export const SIGN_TRANSACTION = 'signTransaction'
+export const SIGN_PERSONAL_MESSAGE = 'signPersonalMessage'
+export const STORE_METADATA = 'storeMetadata'
+export const READ_METADATA = 'readMetadata'
+export const REQUEST_PERMISSIONS = 'requestPermissions'
+export const HANDSHAKE = 'handShake'
