@@ -106,6 +106,20 @@ class IdManagerProvider {
 	requestPermissions (permissions) {
 		return this.transport.requestPermissions(permissions)
 	}
+
+	isConnected () {
+		if (this.transport) {
+			return this.transport.isConnected()
+		}
+		return false
+	}
+
+	getPassword () {
+		if (this.transport) {
+			return this.transport.getPassword()
+		}
+		return null
+	}
 }
 
 export default IdManagerProvider

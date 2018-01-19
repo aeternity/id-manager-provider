@@ -26,6 +26,14 @@ class BaseTransport {
 	requestPermissions (permissions) {
 		throw new Error('Not Implemented')
 	}
+
+	isConnected () {
+		throw new Error('Not Implemented')
+	}
+
+	getPassword () {
+		return null
+	}
 }
 
 export default BaseTransport

@@ -10,6 +10,8 @@ class PostMessageTransport extends BaseTransport {
 		console.log('PostMessageTransport constructor')
 		let that = this
 
+		that.isConnected = true
+
 		if(self === top) {
 			this.idManagerWindow = null
 		} else {
@@ -126,6 +128,10 @@ class PostMessageTransport extends BaseTransport {
 				reject(err)
 			}
 		})
+	}
+
+	isConnected () {
+		return this.isConnected
 	}
 }
 

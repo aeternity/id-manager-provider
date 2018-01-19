@@ -19,9 +19,14 @@ class WebsocketTransport extends BaseTransport {
 
 		this.socket.on('partnerDisconnected', () => {
 			console.log('partnerDisconnected')
+			this.providerConnected = false
 		})
 
 		this.openChannel()
+	}
+
+	getPassword () {
+		return this.channelPassword
 	}
 
 	openChannel () {
@@ -29,7 +34,6 @@ class WebsocketTransport extends BaseTransport {
 			this.socket.emit('openChannel', (password) => {
 				console.log('openChannelResponse', password)
 				this.channelPassword = password
-				alert(password)
 			})
 		}
 	}
@@ -55,6 +59,10 @@ class WebsocketTransport extends BaseTransport {
 				return resolve(payload)
 			})
 		})
+	}
+
+	isConnected () {
+		return this.providerConnected
 	}
 }
 
