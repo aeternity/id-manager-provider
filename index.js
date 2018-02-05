@@ -4,6 +4,7 @@ const uuidv4 = require('uuid/v4')
 const METHOD_GET_ACCOUNTS = 'getAccounts'
 const METHOD_SIGN_TRANSACTION = 'signTransaction'
 const METHOD_SIGN_PERSONAL_MESSAGE = 'signPersonalMessage'
+const METHOD_URL_CHANGED = 'urlChanged'
 
 class IdManagerProvider {
 	constructor (options = {}) {
@@ -71,6 +72,9 @@ class IdManagerProvider {
 				delete that.handlers[data.uuid]
 			}
 		}, false)
+
+		// register listener for url changes
+		window.addEventListener('hashchange', event => that.onHasChange(event), false)
 	}
 
 	postMessage (method, payload, callback) {
@@ -112,7 +116,7 @@ class IdManagerProvider {
 			},500)
 			try {
 				//return this.idManagerWindow.location.host === this.idManagerHost
-				this.postMessage('handShake',null, (payload, event)=>{
+				this.postMessage('handShake',null, (payload, event) => {
 					console.log('event', event)
 					clearTimeout(timeout)
 					resolve(true)
@@ -123,6 +127,17 @@ class IdManagerProvider {
 				resolve(false)
 			}
 		})
+	}
+
+	onHasChange (event) {
+		try {
+			let location = event.newURL
+			this.postMessage(METHOD_URL_CHANGED, location, (payload, event) => {
+				// console.log(METHOD_URL_CHANGED, 'answer', payload)
+			})
+		} catch (e) {
+			// console.log(e)
+		}
 	}
 }
 
