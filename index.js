@@ -4,6 +4,7 @@ const uuidv4 = require('uuid/v4')
 const METHOD_GET_ACCOUNTS = 'getAccounts'
 const METHOD_SIGN_TRANSACTION = 'signTransaction'
 const METHOD_SIGN_PERSONAL_MESSAGE = 'signPersonalMessage'
+const METHOD_URL_CHANGED = 'urlChanged'
 
 class IdManagerProvider {
 	constructor (options = {}) {
@@ -70,7 +71,18 @@ class IdManagerProvider {
 				handler(payload, event)
 				delete that.handlers[data.uuid]
 			}
-		}, false)
+		}, false);
+
+		['load', 'popstate'].forEach(eventName =>
+			window.addEventListener(eventName, () => this.sendCurrentUrl(), false));
+
+		['pushState', 'replaceState'].forEach(methodName => {
+			const originalMethod = history[methodName]
+			history[methodName] = (...args) => {
+				originalMethod.apply(history, args)
+				this.sendCurrentUrl()
+			}
+		})
 	}
 
 	postMessage (method, payload, callback) {
@@ -123,6 +135,10 @@ class IdManagerProvider {
 				resolve(false)
 			}
 		})
+	}
+
+	sendCurrentUrl (event) {
+		this.postMessage(METHOD_URL_CHANGED, location.href)
 	}
 }
 
