@@ -1,3 +1,6 @@
+## This repository has been archived on 20.02.2023
+The reason for the retirement is that the code is not used anymore.
+
 # Æternity ID Manager provider
 
 This basically is a dummy web3 provider which sends its requests to the ID Manager instead of handling them itself. The communication is handled with postMessage calls and callbacks. For security all Dapps using this must run under the following url scheme http(s)://<subdomain>.aepps.(com|dev)
